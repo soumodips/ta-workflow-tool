@@ -26,7 +26,7 @@ const AddNodeUnitContainer = styled('div')(
   left: 50px;
   bottom: 15px;
   box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.08);
-  transition: all 0.2s ease;
+  transition: all 0.4s ease;
   &:hover {
    box-shadow: 0 0 4px 4px rgba(0, 0, 0.1, 0.08);
    padding: 10px;

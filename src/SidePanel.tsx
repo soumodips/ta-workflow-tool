@@ -5,12 +5,16 @@ import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 
-export const SidePanel = ({ open, onClose }: DrawerProps) => {
+export const SidePanel = ({
+  open,
+  onClose,
+  selectedNodeId,
+}: DrawerProps & { selectedNodeId: false | string }) => {
   const DrawerList = (
     <Box role='presentation' onClick={() => onClose} sx={{ width: 350 }}>
       <List>edit task</List>
       <Divider />
-      <List>edit</List>
+      <List>{selectedNodeId}</List>
     </Box>
   );
 

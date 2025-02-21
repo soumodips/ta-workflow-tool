@@ -1,26 +1,26 @@
-import { useRef, useCallback, useState } from 'react';
 import {
-  ReactFlow,
-  ReactFlowProvider,
   addEdge,
-  useNodesState,
-  useEdgesState,
-  Controls,
-  useReactFlow,
   Background,
+  Controls,
+  getConnectedEdges,
   getIncomers,
   getOutgoers,
-  getConnectedEdges,
   MiniMap,
+  ReactFlow,
+  ReactFlowProvider,
+  useEdgesState,
+  useNodesState,
+  useReactFlow,
 } from '@xyflow/react';
+import { useCallback, useRef, useState } from 'react';
 
 import '@xyflow/react/dist/style.css';
 
+import { v4 as uuidv4 } from 'uuid';
 import { AddNodeUnit } from './AddNodeUnit';
 import { DnDProvider, useDnD } from './DnDContext';
-import { customTypeMapper } from './utils';
 import { SidePanel } from './SidePanel';
-
+import { customTypeMapper } from './utils';
 // const initialNodes = [
 //   {
 //     id: '1',
@@ -52,11 +52,11 @@ import { SidePanel } from './SidePanel';
 // ];
 
 let id = 0;
-const getId = () => `new_node_${id++}`;
+const getId = () => uuidv4();
 
 const DnDFlow = () => {
   const reactFlowWrapper = useRef(null);
-  const [open, setOpen] = useState(false);
+  const [selectedNodeId, setSelectedNodeId] = useState<false | string>(false);
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
   const { screenToFlowPosition } = useReactFlow();
@@ -158,7 +158,7 @@ const DnDFlow = () => {
           onConnect={onConnect}
           onDrop={onDrop}
           onDragOver={onDragOver}
-          onNodeClick={() => setOpen(true)}
+          onNodeClick={(e: any) => setSelectedNodeId(e?.target?.dataset?.id)}
           fitView
         >
           <Controls />
@@ -167,7 +167,11 @@ const DnDFlow = () => {
         </ReactFlow>
       </div>
       <AddNodeUnit onDrop={onDrop} />
-      <SidePanel open={open} onClose={() => setOpen(false)} />
+      <SidePanel
+        open={Boolean(selectedNodeId)}
+        onClose={() => setSelectedNodeId(false)}
+        selectedNodeId={selectedNodeId}
+      />
     </div>
   );
 };
