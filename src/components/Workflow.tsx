@@ -7,11 +7,12 @@ import {
   getIncomers,
   getOutgoers,
   MiniMap,
+  OnEdgesChange,
+  OnNodesChange,
   ReactFlow,
-  ReactFlowProps,
 } from '@xyflow/react';
-import { useCallback, useRef } from 'react';
-import { WorkflowNodeType } from './types';
+import { Dispatch, SetStateAction, useCallback, useRef } from 'react';
+import { WorkflowNodeType } from '../common';
 
 export const Workflow = ({
   nodes,
@@ -21,12 +22,23 @@ export const Workflow = ({
   onNodesChange,
   onEdgesChange,
   onDrop,
-}: WorkflowNodeType[] & any) => {
+}: {
+  nodes: Node[] & any;
+  edges: Edge[];
+  setEdges: React.Dispatch<React.SetStateAction<any[]>>;
+  setSelectedNode: Dispatch<SetStateAction<WorkflowNodeType | null>>;
+  onNodesChange: OnNodesChange<Node & any>;
+  onEdgesChange: OnEdgesChange<Edge>;
+  onDrop: (
+    event: { preventDefault: () => void; clientX: any; clientY: any },
+    isClicked?: boolean
+  ) => void;
+}) => {
   const reactFlowWrapper = useRef(null);
 
   const onConnect = useCallback(
     (params: any) => setEdges((eds: any) => addEdge(params, eds)),
-    []
+    [setEdges]
   );
 
   const onNodesDelete = useCallback(
@@ -53,7 +65,7 @@ export const Workflow = ({
         }, edges)
       );
     },
-    [nodes, edges]
+    [nodes, edges, setEdges]
   );
 
   const onDragOver = useCallback(
@@ -68,7 +80,7 @@ export const Workflow = ({
   );
 
   const handleNodeClick = (e: any) => {
-    const nodeData = nodes.find(
+    const nodeData: any = nodes.find(
       (nd: { id: any }) => nd.id === e?.target?.dataset?.id
     );
     setSelectedNode(nodeData);

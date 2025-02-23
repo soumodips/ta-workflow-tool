@@ -1,4 +1,4 @@
-import { Node, XYPosition } from '@xyflow/react';
+import { XYPosition } from '@xyflow/react';
 
 export const CustomNodeTypes = {
   input: 'Task-#add8e6',

@@ -1,8 +1,8 @@
-import React from 'react';
-import { useWorkflow } from './WorkflowContext';
-import { customTypeMapper } from './utils';
 import { styled, Tooltip } from '@mui/material';
+import { DragEvent } from 'react';
+import { customTypeMapper, useWorkflow } from '../common';
 
+//types
 type AddNodeUnitPropType = {
   onDrop: (
     event: {
@@ -14,6 +14,7 @@ type AddNodeUnitPropType = {
   ) => void;
 };
 
+// Styled Components
 const AddNodeUnitContainer = styled('div')(
   () => `
   position: absolute;
@@ -34,64 +35,92 @@ const AddNodeUnitContainer = styled('div')(
 `
 );
 
+const WorkflowNode = styled('div')(
+  () => `
+   padding: 6px 10px;
+  margin: 10px 8px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 1px 1px 2px 2px rgba(0, 0, 0, 0.1);
+  cursor: grab;
+  width: 120px;
+  transition: all 0.2s ease;
+  background-color: lightyellow;
+  &:hover {
+    box-shadow: 1px 1px 4px 2px rgba(0, 0, 0, 0.2);
+    width: 110px;
+  }
+`
+);
+
+const WorkflowInputNode = styled(WorkflowNode)(
+  () => `
+  background-color: lightblue;
+`
+);
+
+const WorkflowOutputNode = styled(WorkflowNode)(
+  () => `
+  background-color: lightgreen;
+`
+);
+
 export const AddNodeUnit = ({ onDrop }: AddNodeUnitPropType) => {
   const [type, setType] = useWorkflow();
 
-  const onDragStart = (
-    event: React.DragEvent<HTMLDivElement>,
-    nodeType: string
-  ) => {
-    setType && setType(nodeType);
+  const onDragStart = (event: DragEvent<HTMLDivElement>, nodeType: string) => {
+    // check if the dropped element is valid
+    if (!type) return;
+
+    if (setType) setType(nodeType);
     event.dataTransfer.effectAllowed = 'move';
   };
 
   return (
     <AddNodeUnitContainer>
-      {/* <div className="description">You can drag these nodes to the pane on the right.</div> */}
       <Tooltip
         title='Click or drag-and-drop to add a task to the canvas'
         arrow
         placement='right'
       >
-        <div
-          className='workflownode input'
+        <WorkflowInputNode
           onDragStart={(event) => onDragStart(event, 'input')}
           onMouseDown={() => setType && setType('input')}
           draggable
           onMouseUp={(event) => onDrop(event, true)}
         >
           {customTypeMapper('input')}
-        </div>
+        </WorkflowInputNode>
       </Tooltip>
       <Tooltip
         title='Click or drag-and-drop to add a condition to the canvas'
         arrow
         placement='right'
       >
-        <div
-          className='workflownode'
+        <WorkflowNode
           onDragStart={(event) => onDragStart(event, 'default')}
           onMouseDown={() => setType && setType('default')}
           draggable
           onMouseUp={(event) => onDrop(event, true)}
         >
           {customTypeMapper('default')}
-        </div>
+        </WorkflowNode>
       </Tooltip>
       <Tooltip
         title='Click or drag-and-drop to add a notification to the canvas'
         arrow
         placement='right'
       >
-        <div
-          className='workflownode output'
+        <WorkflowOutputNode
           onDragStart={(event) => onDragStart(event, 'output')}
           onMouseDown={() => setType && setType('output')}
           draggable
           onMouseUp={(event) => onDrop(event, true)}
         >
           {customTypeMapper('output')}
-        </div>
+        </WorkflowOutputNode>
       </Tooltip>
     </AddNodeUnitContainer>
   );

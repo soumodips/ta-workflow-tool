@@ -4,50 +4,19 @@ import {
   ReactFlowProvider,
   useEdgesState,
   useNodesState,
-  useReactFlow
+  useReactFlow,
 } from '@xyflow/react';
-import { useCallback, useEffect, useState } from 'react';
-
 import '@xyflow/react/dist/style.css';
-
+import { useCallback, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { AddNodeUnit } from './AddNodeUnit';
-import { SidePanel } from './SidePanel';
-import { WorkflowNodeType } from './types';
-import { customTypeMapper, generateInitialNodeDetails } from './utils';
-import { Workflow } from './Workflow';
-import { useWorkflow, WorkflowProvider } from './WorkflowContext';
-// const initialNodes = [
-//   {
-//     id: '1',
-//     type: 'input',
-//     data: { label: 'Start here...' },
-//     position: { x: -150, y: 0 },
-//   },
-//   {
-//     id: '2',
-//     type: 'input',
-//     data: { label: '...or here!' },
-//     position: { x: 150, y: 0 },
-//   },
-//   { id: '3', data: { label: 'Delete me.' }, position: { x: 0, y: 100 } },
-//   { id: '4', data: { label: 'Then me!' }, position: { x: 0, y: 200 } },
-//   {
-//     id: '5',
-//     type: 'output',
-//     data: { label: 'End here!' },
-//     position: { x: 0, y: 300 },
-//   },
-// ];
-
-// const initialEdges = [
-//   { id: '1->3', source: '1', target: '3' },
-//   { id: '2->3', source: '2', target: '3' },
-//   { id: '3->4', source: '3', target: '4' },
-//   { id: '4->5', source: '4', target: '5' },
-// ];
-
-const getId = () => uuidv4();
+import {
+  customTypeMapper,
+  generateInitialNodeDetails,
+  useWorkflow,
+  WorkflowNodeType,
+  WorkflowProvider,
+} from './common';
+import { AddNodeUnit, SidePanel, Workflow } from './components';
 
 const App = () => {
   const [selectedNode, setSelectedNode] = useState<WorkflowNodeType | null>(
@@ -79,14 +48,16 @@ const App = () => {
           ? Math.round(Math.random() * 400) + 150 - nodes.length
           : event.clientY,
       });
+
+      // type clash for reuse in WorkflowContext
       const newNode: Node & any = {
-        id: getId(),
+        id: uuidv4(),
         type,
         position,
         data: {
           label: `New ${customTypeMapper(type)}`,
           tags: [],
-          priority: 'Medium',
+          priority: '',
           nodeDetails: generateInitialNodeDetails(type),
         },
         style: {
@@ -96,11 +67,9 @@ const App = () => {
 
       setNodes((nds) => nds.concat(newNode));
     },
-    [screenToFlowPosition, type]
+    [screenToFlowPosition, type, setNodes, nodes.length]
   );
 
-
-  useEffect(() => console.log(edges), [edges]);
   return (
     <div className='app'>
       <Workflow
@@ -123,10 +92,12 @@ const App = () => {
   );
 };
 
-export default () => (
+const AppWithProviders = () => (
   <ReactFlowProvider>
     <WorkflowProvider>
       <App />
     </WorkflowProvider>
   </ReactFlowProvider>
 );
+
+export default AppWithProviders;
