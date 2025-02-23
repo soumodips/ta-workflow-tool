@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDnD } from './DnDContext';
+import { useWorkflow } from './WorkflowContext';
 import { customTypeMapper } from './utils';
 import { styled, Tooltip } from '@mui/material';
 
@@ -35,7 +35,7 @@ const AddNodeUnitContainer = styled('div')(
 );
 
 export const AddNodeUnit = ({ onDrop }: AddNodeUnitPropType) => {
-  const [type, setType] = useDnD();
+  const [type, setType] = useWorkflow();
 
   const onDragStart = (
     event: React.DragEvent<HTMLDivElement>,

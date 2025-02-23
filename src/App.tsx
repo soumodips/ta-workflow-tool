@@ -12,15 +12,16 @@ import {
   useNodesState,
   useReactFlow,
 } from '@xyflow/react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import '@xyflow/react/dist/style.css';
 
 import { v4 as uuidv4 } from 'uuid';
 import { AddNodeUnit } from './AddNodeUnit';
-import { DnDProvider, useDnD } from './DnDContext';
+import { WorkflowProvider, useWorkflow } from './WorkflowContext';
 import { SidePanel } from './SidePanel';
-import { customTypeMapper } from './utils';
+import { customTypeMapper, generateInitialNodeDetails } from './utils';
+import { WorkflowNodeType } from './types';
 // const initialNodes = [
 //   {
 //     id: '1',
@@ -51,17 +52,18 @@ import { customTypeMapper } from './utils';
 //   { id: '4->5', source: '4', target: '5' },
 // ];
 
-let id = 0;
 const getId = () => uuidv4();
 
-const DnDFlow = () => {
+const WorkflowFlow = () => {
   const reactFlowWrapper = useRef(null);
-  const [selectedNodeId, setSelectedNodeId] = useState<false | string>(false);
+  const [selectedNode, setSelectedNode] = useState<WorkflowNodeType | null>(
+    null
+  );
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
   const { screenToFlowPosition } = useReactFlow();
 
-  const [type] = useDnD();
+  const [type] = useWorkflow();
 
   const onConnect = useCallback(
     (params: any) => setEdges((eds: any) => addEdge(params, eds)),
@@ -70,7 +72,6 @@ const DnDFlow = () => {
 
   const onNodesDelete = useCallback(
     (deleted: any[]) => {
-      console.log(deleted);
       setEdges(
         deleted.reduce((acc: any[], node: any) => {
           const incomers = getIncomers(node, nodes, edges);
@@ -131,7 +132,12 @@ const DnDFlow = () => {
         id: getId(),
         type,
         position,
-        data: { label: `New ${customTypeMapper(type)}` },
+        data: {
+          label: `New ${customTypeMapper(type)}`,
+          tags: [],
+          priority: 'Medium',
+          nodeDetails: generateInitialNodeDetails(type)
+        },
         style: {
           backgroundColor: customTypeMapper(type, true),
         },
@@ -142,6 +148,14 @@ const DnDFlow = () => {
     [screenToFlowPosition, type]
   );
 
+  const handleNodeClick = (e: any) => {
+    const nodeData = nodes.find(
+      (nd: { id: any }) => nd.id === e?.target?.dataset?.id
+    );
+    setSelectedNode(nodeData);
+  };
+
+  useEffect(()=> console.log(nodes),[nodes])
   return (
     <div className='dndflow'>
       <div
@@ -158,7 +172,7 @@ const DnDFlow = () => {
           onConnect={onConnect}
           onDrop={onDrop}
           onDragOver={onDragOver}
-          onNodeClick={(e: any) => setSelectedNodeId(e?.target?.dataset?.id)}
+          onNodeClick={handleNodeClick}
           fitView
         >
           <Controls />
@@ -168,9 +182,10 @@ const DnDFlow = () => {
       </div>
       <AddNodeUnit onDrop={onDrop} />
       <SidePanel
-        open={Boolean(selectedNodeId)}
-        onClose={() => setSelectedNodeId(false)}
-        selectedNodeId={selectedNodeId}
+        open={Boolean(selectedNode)}
+        onClose={() => setSelectedNode(null)}
+        selectedNode={selectedNode}
+        setNodes={setNodes}
       />
     </div>
   );
@@ -178,8 +193,8 @@ const DnDFlow = () => {
 
 export default () => (
   <ReactFlowProvider>
-    <DnDProvider>
-      <DnDFlow />
-    </DnDProvider>
+    <WorkflowProvider>
+      <WorkflowFlow />
+    </WorkflowProvider>
   </ReactFlowProvider>
 );
