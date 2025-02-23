@@ -1,27 +1,22 @@
 import {
-  addEdge,
-  Background,
-  Controls,
-  getConnectedEdges,
-  getIncomers,
-  getOutgoers,
-  MiniMap,
-  ReactFlow,
+  Edge,
+  Node,
   ReactFlowProvider,
   useEdgesState,
   useNodesState,
-  useReactFlow,
+  useReactFlow
 } from '@xyflow/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import '@xyflow/react/dist/style.css';
 
 import { v4 as uuidv4 } from 'uuid';
 import { AddNodeUnit } from './AddNodeUnit';
-import { WorkflowProvider, useWorkflow } from './WorkflowContext';
 import { SidePanel } from './SidePanel';
-import { customTypeMapper, generateInitialNodeDetails } from './utils';
 import { WorkflowNodeType } from './types';
+import { customTypeMapper, generateInitialNodeDetails } from './utils';
+import { Workflow } from './Workflow';
+import { useWorkflow, WorkflowProvider } from './WorkflowContext';
 // const initialNodes = [
 //   {
 //     id: '1',
@@ -54,59 +49,15 @@ import { WorkflowNodeType } from './types';
 
 const getId = () => uuidv4();
 
-const WorkflowFlow = () => {
-  const reactFlowWrapper = useRef(null);
+const App = () => {
   const [selectedNode, setSelectedNode] = useState<WorkflowNodeType | null>(
     null
   );
-  const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { screenToFlowPosition } = useReactFlow();
 
   const [type] = useWorkflow();
-
-  const onConnect = useCallback(
-    (params: any) => setEdges((eds: any) => addEdge(params, eds)),
-    []
-  );
-
-  const onNodesDelete = useCallback(
-    (deleted: any[]) => {
-      setEdges(
-        deleted.reduce((acc: any[], node: any) => {
-          const incomers = getIncomers(node, nodes, edges);
-          const outgoers = getOutgoers(node, nodes, edges);
-          const connectedEdges = getConnectedEdges([node], edges);
-
-          const remainingEdges = acc.filter(
-            (edge: any) => !connectedEdges.includes(edge)
-          );
-
-          const createdEdges = incomers.flatMap(({ id: source }) =>
-            outgoers.map(({ id: target }) => ({
-              id: `${source}->${target}`,
-              source,
-              target,
-            }))
-          );
-
-          return [...remainingEdges, ...createdEdges];
-        }, edges)
-      );
-    },
-    [nodes, edges]
-  );
-
-  const onDragOver = useCallback(
-    (event: {
-      preventDefault: () => void;
-      dataTransfer: { dropEffect: string };
-    }) => {
-      event.preventDefault();
-      event.dataTransfer.dropEffect = 'move';
-    },
-    []
-  );
 
   const onDrop = useCallback(
     (
@@ -128,7 +79,7 @@ const WorkflowFlow = () => {
           ? Math.round(Math.random() * 400) + 150 - nodes.length
           : event.clientY,
       });
-      const newNode = {
+      const newNode: Node & any = {
         id: getId(),
         type,
         position,
@@ -136,7 +87,7 @@ const WorkflowFlow = () => {
           label: `New ${customTypeMapper(type)}`,
           tags: [],
           priority: 'Medium',
-          nodeDetails: generateInitialNodeDetails(type)
+          nodeDetails: generateInitialNodeDetails(type),
         },
         style: {
           backgroundColor: customTypeMapper(type, true),
@@ -148,38 +99,19 @@ const WorkflowFlow = () => {
     [screenToFlowPosition, type]
   );
 
-  const handleNodeClick = (e: any) => {
-    const nodeData = nodes.find(
-      (nd: { id: any }) => nd.id === e?.target?.dataset?.id
-    );
-    setSelectedNode(nodeData);
-  };
 
-  useEffect(()=> console.log(nodes),[nodes])
+  useEffect(() => console.log(edges), [edges]);
   return (
-    <div className='dndflow'>
-      <div
-        className='reactflow-wrapper'
-        ref={reactFlowWrapper}
-        style={{ height: window.innerHeight }}
-      >
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onNodesDelete={onNodesDelete}
-          onConnect={onConnect}
-          onDrop={onDrop}
-          onDragOver={onDragOver}
-          onNodeClick={handleNodeClick}
-          fitView
-        >
-          <Controls />
-          <MiniMap position='top-left' />
-          <Background />
-        </ReactFlow>
-      </div>
+    <div className='app'>
+      <Workflow
+        nodes={nodes}
+        edges={edges}
+        setEdges={setEdges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        setSelectedNode={setSelectedNode}
+        onDrop={onDrop}
+      />
       <AddNodeUnit onDrop={onDrop} />
       <SidePanel
         open={Boolean(selectedNode)}
@@ -194,7 +126,7 @@ const WorkflowFlow = () => {
 export default () => (
   <ReactFlowProvider>
     <WorkflowProvider>
-      <WorkflowFlow />
+      <App />
     </WorkflowProvider>
   </ReactFlowProvider>
 );

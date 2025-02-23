@@ -8,30 +8,25 @@ body {
   box-sizing: border-box;
 }
 
-#app {
-  width: 100vw;
-  height: 100vh;
-}
-
-.dndflow {
+.app {
   flex-direction: column;
   display: flex;
   flex-grow: 1;
   height: 100%;
 }
 
-.dndflow aside {
+.app aside {
   border-right: 1px solid #eee;
   padding: 15px 10px;
   font-size: 12px;
   background: #fcfcfc;
 }
 
-.dndflow aside .description {
+.app aside .description {
   margin-bottom: 10px;
 }
 
-.dndflow .dndnode {
+.app .workflownode {
   padding: 6px 10px;
   margin: 10px 8px;
   border-radius: 5px;
@@ -45,34 +40,34 @@ body {
   background-color: lightyellow;
 }
 
-.dndflow .dndnode:hover {
+.app .workflownode:hover {
   box-shadow: 1px 1px 4px 2px rgba(0, 0, 0, 0.2);
   width: 110px;
 }
 
-.dndflow .dndnode.input {
+.app .workflownode.input {
   background-color: lightblue;
 }
 
-.dndflow .dndnode.output {
+.app .workflownode.output {
   background-color: lightgreen;
 }
 
-.dndflow .reactflow-wrapper {
+.app .reactflow-wrapper {
   flex-grow: 1;
   height: 100%;
 }
 
-.dndflow .selectall {
+.app .selectall {
   margin-top: 10px;
 }
 
 @media screen and (min-width: 768px) {
-  .dndflow {
+  .app {
     flex-direction: row;
   }
 
-  .dndflow aside {
+  .app aside {
     width: 20%;
     max-width: 250px;
   }

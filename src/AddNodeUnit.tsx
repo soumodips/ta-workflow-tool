@@ -46,11 +46,15 @@ export const AddNodeUnit = ({ onDrop }: AddNodeUnitPropType) => {
   };
 
   return (
-      <AddNodeUnitContainer>
-        {/* <div className="description">You can drag these nodes to the pane on the right.</div> */}
-    <Tooltip title='Click or drag to add a task to the canvas' arrow placement='right'>
+    <AddNodeUnitContainer>
+      {/* <div className="description">You can drag these nodes to the pane on the right.</div> */}
+      <Tooltip
+        title='Click or drag-and-drop to add a task to the canvas'
+        arrow
+        placement='right'
+      >
         <div
-          className='dndnode input'
+          className='workflownode input'
           onDragStart={(event) => onDragStart(event, 'input')}
           onMouseDown={() => setType && setType('input')}
           draggable
@@ -58,10 +62,14 @@ export const AddNodeUnit = ({ onDrop }: AddNodeUnitPropType) => {
         >
           {customTypeMapper('input')}
         </div>
-    </Tooltip>
-    <Tooltip title='Click or drag to add a condition to the canvas' arrow placement='right'>
-    <div
-          className='dndnode'
+      </Tooltip>
+      <Tooltip
+        title='Click or drag-and-drop to add a condition to the canvas'
+        arrow
+        placement='right'
+      >
+        <div
+          className='workflownode'
           onDragStart={(event) => onDragStart(event, 'default')}
           onMouseDown={() => setType && setType('default')}
           draggable
@@ -69,10 +77,14 @@ export const AddNodeUnit = ({ onDrop }: AddNodeUnitPropType) => {
         >
           {customTypeMapper('default')}
         </div>
-    </Tooltip>
-    <Tooltip title='Click or drag to add a notification to the canvas' arrow placement='right'>
-    <div
-          className='dndnode output'
+      </Tooltip>
+      <Tooltip
+        title='Click or drag-and-drop to add a notification to the canvas'
+        arrow
+        placement='right'
+      >
+        <div
+          className='workflownode output'
           onDragStart={(event) => onDragStart(event, 'output')}
           onMouseDown={() => setType && setType('output')}
           draggable
@@ -80,7 +92,7 @@ export const AddNodeUnit = ({ onDrop }: AddNodeUnitPropType) => {
         >
           {customTypeMapper('output')}
         </div>
-    </Tooltip>
+      </Tooltip>
     </AddNodeUnitContainer>
   );
 };
