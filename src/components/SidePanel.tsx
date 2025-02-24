@@ -1,8 +1,8 @@
-import { Container, Divider, Typography } from '@mui/material';
+import { Container, Divider } from '@mui/material';
 import Drawer, { DrawerProps } from '@mui/material/Drawer';
 import { Dispatch, SetStateAction } from 'react';
-import { WorkflowNodeType } from '../common';
-import { EditForm } from '../components';
+import { customTypeMapper, WorkflowNodeType } from '../common';
+import { DetailsCard, EditForm } from '../components';
 
 export const SidePanel = ({
   open,
@@ -17,12 +17,15 @@ export const SidePanel = ({
 
   return (
     <Drawer open={open} onClose={onClose} anchor='right'>
-      <Container maxWidth='xs'>
+      <Container maxWidth='sm' >
         <Divider />
-        <Typography variant='h4' align='center' marginBlock={2}>
-          Edit Task Details
-        </Typography>
-        <EditForm {...selectedNode} setNodes={setNodes} />
+        <DetailsCard
+          title={`Edit ${customTypeMapper(selectedNode.type)} Details`}
+          subheader={selectedNode.data.label}
+          footer={JSON.stringify(selectedNode)}
+        >
+            <EditForm {...selectedNode} setNodes={setNodes} onClose={onClose} />
+        </DetailsCard>
         <Divider />
       </Container>
     </Drawer>

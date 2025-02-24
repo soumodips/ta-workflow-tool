@@ -7,7 +7,7 @@ import {
   useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import {
   customTypeMapper,
@@ -70,6 +70,7 @@ const App = () => {
     [screenToFlowPosition, type, setNodes, nodes.length]
   );
 
+  useEffect(()=>{console.log(nodes)},[nodes])
   return (
     <div className='app'>
       <Workflow

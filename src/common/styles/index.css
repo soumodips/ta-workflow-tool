@@ -36,5 +36,8 @@ body {
 }
 
 label {
-  font-size: small;
+  font-size: smaller;
+  font-weight: 600;
+  color: gray;
 }
+

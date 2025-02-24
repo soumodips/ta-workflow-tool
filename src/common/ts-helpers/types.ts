@@ -42,7 +42,7 @@ export type NotificationDetailsType = {
   notificationContent: string;
   notifyTo: string;
   notifyBy: string;
-  lastNotified: Date;
+  lastNotifiedOn: Date;
 };
 
 export type PrerequisitesType = {
