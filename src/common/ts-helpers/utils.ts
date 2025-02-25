@@ -43,6 +43,7 @@ export const onFormChange = (
         position: any;
       }) => {
         if (nd?.id === id) {
+          // return updateValueByDotNotation(nd, e.target.name, e.target.value);
           switch (e.target.name) {
             case 'data.label':
               return {
@@ -242,3 +243,46 @@ export const onFormChange = (
     )
   );
 };
+
+// function updateValueByDotNotation(obj: { id: any; data: { nodeDetails: any; }; style: any; position: any; }, path: string, value: string | number | boolean | any[]) {
+//   const keys = path.split('.'); // Split the dot notation path into an array of keys
+//   let current:any = obj;
+
+//   // Traverse the path until the second-to-last key
+//   for (let i = 0; i < keys.length - 1; i++) {
+//     if (!current[keys[i]]) {
+//       current[keys[i]] = {}; // Create an empty object if the key does not exist
+//     }
+//     current = current[keys[i]]; // Move deeper into the object
+//   }
+
+//   const finalKey = keys[keys.length - 1];
+
+//   // Handle typecasting if the final key exists
+//   if (current.hasOwnProperty(finalKey)) {
+//     const currentValue = current[finalKey];
+
+//     // Typecast based on the destination type
+//     if (typeof currentValue === 'number' && !isNaN(Number(value))) {
+//       value = Number(value); // Convert to number if the destination is a number
+//     } else if (typeof currentValue === 'boolean') {
+//       value = Boolean(value); // Convert to boolean if the destination is a boolean
+//     } else if (typeof currentValue === 'string') {
+//       value = String(value); // Convert to string if the destination is a string
+//     } else if (Array.isArray(currentValue)) {
+//       // If destination is an array, push the value
+//       if (!Array.isArray(value)) {
+//         value = [value]; // Wrap the value in an array if it's not already an array
+//       }
+//     }
+//   }
+
+//   // Now assign the value at the final key (after typecasting)
+//   if (Array.isArray(current[finalKey])) {
+//     current[finalKey].push(value); // If it's an array, push the new value
+//   } else {
+//     current[finalKey] = value; // Otherwise, just assign the value
+//   }
+
+//   return obj; // Return the updated object
+// }
